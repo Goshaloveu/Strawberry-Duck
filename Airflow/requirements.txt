@@ -1,0 +1,6 @@
+apache-airflow==2.7.1
+apache-airflow-providers-apache-spark==4.9.0
+pendulum
+pandas
+numpy
+scikit-learn
