@@ -41,6 +41,39 @@ services:
       start_period: 5s
     restart: always
 
+  redis:
+    image: redis:latest
+    container_name: redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 30s
+      retries: 50
+      start_period: 30s
+    ports:
+      - "6379:6379" # Maps port 6379 on the host to port 6379 in the container
+    restart: always
+
+  rabbitmq: # user: rmuser, password: rmpassword
+    image: rabbitmq:3-management
+    hostname: rabbitmq
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=rmuser
+      - RABBITMQ_DEFAULT_PASS=rmpassword
+      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648
+    healthcheck:
+      test: ["CMD", "ping", "rabbitmqctl", "node_health_check"]
+      interval: 10s
+      timeout: 30s
+      retries: 50
+      start_period: 30s
+    volumes:
+      - ./rabbitmq_data:/var/lib/Rabbitmq
+    ports:
+      - "5672:5672"  # AMQP port
+      - "15672:15672" # Management UI port
+
   airflow-webserver:
     <<: *airflow-common
     command: webserver
@@ -138,14 +171,7 @@ services:
   db:
     image: postgres:15
     restart: always
-    # set shared memory limit when using docker compose
     shm_size: 128mb
-    # or set shared memory limit when deploy via swarm stack
-    #volumes:
-    #  - type: tmpfs
-    #    target: /dev/shm
-    #    tmpfs:
-    #      size: 134217728 # 128*2^20 bytes = 128Mb
     environment:
       POSTGRES_USER: example
       POSTGRES_PASSWORD: example
@@ -155,6 +181,8 @@ services:
       interval: 10s
       retries: 5
       start_period: 5s
+    volumes:
+      - ./postgres:/var/lib/Postgres
   adminer:
     image: adminer
     restart: always
@@ -163,3 +191,5 @@ services:
 
 volumes:
   postgres-airflow:
+  rabbitmq_data:
+  postgres:
