@@ -33,7 +33,7 @@ services:
       POSTGRES_PASSWORD: airflow
       POSTGRES_DB: airflow
     volumes:
-      - postgres-airflow:/var/lib/postgresql/data
+      - ./postgres-airflow:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 10s
@@ -69,7 +69,7 @@ services:
       retries: 50
       start_period: 30s
     volumes:
-      - ./rabbitmq_data:/var/lib/Rabbitmq
+      - ./Rabbitmq:/var/lib/Rabbitmq
     ports:
       - "5672:5672"  # AMQP port
       - "15672:15672" # Management UI port
@@ -182,14 +182,40 @@ services:
       retries: 5
       start_period: 5s
     volumes:
-      - ./postgres:/var/lib/Postgres
+      - ./Postgres:/var/lib/postgresql/data
+      - ./Postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro # Добавьте эту строку
   adminer:
     image: adminer
     restart: always
     ports:
       - 4040:8080
+  # pinecone need to be changed to production version!!!!
+  dense-index:
+    image: ghcr.io/pinecone-io/pinecone-index:latest
+    container_name: dense-index
+    environment:
+      PORT: 5081
+      INDEX_TYPE: serverless
+      VECTOR_TYPE: dense
+      DIMENSION: 2 
+      METRIC: cosine
+    ports:
+      - "5081:5081"
+    platform: linux/amd64
+  sparse-index:
+    image: ghcr.io/pinecone-io/pinecone-index:latest
+    container_name: sparse-index
+    environment:
+      PORT: 5082
+      INDEX_TYPE: serverless
+      VECTOR_TYPE: sparse
+      DIMENSION: 0
+      METRIC: dotproduct
+    ports:
+      - "5082:5082"
+    platform: linux/amd64
 
 volumes:
   postgres-airflow:
-  rabbitmq_data:
-  postgres:
+  Rabbitmq:
+  Postgres:
