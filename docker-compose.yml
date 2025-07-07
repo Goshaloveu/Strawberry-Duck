@@ -54,25 +54,25 @@ services:
       - "6379:6379" # Maps port 6379 on the host to port 6379 in the container
     restart: always
 
-  rabbitmq: # user: rmuser, password: rmpassword
-    image: rabbitmq:3-management
-    hostname: rabbitmq
-    restart: always
-    environment:
-      - RABBITMQ_DEFAULT_USER=rmuser
-      - RABBITMQ_DEFAULT_PASS=rmpassword
-      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648
-    healthcheck:
-      test: ["CMD", "ping", "rabbitmqctl", "node_health_check"]
-      interval: 10s
-      timeout: 30s
-      retries: 50
-      start_period: 30s
-    volumes:
-      - ./Rabbitmq:/var/lib/Rabbitmq
-    ports:
-      - "5672:5672"  # AMQP port
-      - "15672:15672" # Management UI port
+  # rabbitmq: # user: rmuser, password: rmpassword
+  #   image: rabbitmq:3-management
+  #   hostname: rabbitmq
+  #   restart: always
+  #   environment:
+  #     - RABBITMQ_DEFAULT_USER=rmuser
+  #     - RABBITMQ_DEFAULT_PASS=rmpassword
+  #     - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648
+  #   healthcheck:
+  #     test: ["CMD", "ping", "rabbitmqctl", "node_health_check"]
+  #     interval: 10s
+  #     timeout: 30s
+  #     retries: 50
+  #     start_period: 30s
+  #   volumes:
+  #     - ./Rabbitmq:/var/lib/Rabbitmq
+  #   ports:
+  #     - "5672:5672"  # AMQP port
+  #     - "15672:15672" # Management UI port
 
   airflow-webserver:
     <<: *airflow-common
@@ -190,32 +190,32 @@ services:
     ports:
       - 4040:8080
   # pinecone need to be changed to production version!!!!
-  dense-index:
-    image: ghcr.io/pinecone-io/pinecone-index:latest
-    container_name: dense-index
-    environment:
-      PORT: 5081
-      INDEX_TYPE: serverless
-      VECTOR_TYPE: dense
-      DIMENSION: 2 
-      METRIC: cosine
-    ports:
-      - "5081:5081"
-    platform: linux/amd64
-  sparse-index:
-    image: ghcr.io/pinecone-io/pinecone-index:latest
-    container_name: sparse-index
-    environment:
-      PORT: 5082
-      INDEX_TYPE: serverless
-      VECTOR_TYPE: sparse
-      DIMENSION: 0
-      METRIC: dotproduct
-    ports:
-      - "5082:5082"
-    platform: linux/amd64
+  # dense-index:
+  #   image: ghcr.io/pinecone-io/pinecone-index:latest
+  #   container_name: dense-index
+  #   environment:
+  #     PORT: 5081
+  #     INDEX_TYPE: serverless
+  #     VECTOR_TYPE: dense
+  #     DIMENSION: 2 
+  #     METRIC: cosine
+  #   ports:
+  #     - "5081:5081"
+  #   platform: linux/amd64
+  # sparse-index:
+  #   image: ghcr.io/pinecone-io/pinecone-index:latest
+  #   container_name: sparse-index
+  #   environment:
+  #     PORT: 5082
+  #     INDEX_TYPE: serverless
+  #     VECTOR_TYPE: sparse
+  #     DIMENSION: 0
+  #     METRIC: dotproduct
+  #   ports:
+  #     - "5082:5082"
+  #   platform: linux/amd64
 
 volumes:
   postgres-airflow:
-  Rabbitmq:
+  # Rabbitmq:
   Postgres:
