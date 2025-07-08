@@ -52,4 +52,9 @@ This project aims to develop a service that **identifies and tracks trending nam
 
 ### Архитектура проекта
 
-<img src="https://github.com/Goshaloveu/Strawberry-Duck/blob/main/images/main_db_schema.png?raw=true" alt="Схема БД" style="width:50%; height:auto; display:inline-block; margin: center auto; max-width: 300px;">
+<img src="https://github.com/Goshaloveu/Strawberry-Duck/blob/main/images/architecture.png?raw=true" alt="Схема БД" style="width:50%; height:auto; display:inline-block; margin: center auto; max-width: 300px;">
+
+
+### Запуск
+
+Для запуска проекта потрубется склонировать проект на свою машину, проверить имеется ли уже docker и docker-compose уже на компьютере, после чего запустить проект с помощью команды "docker-compose up -d"
