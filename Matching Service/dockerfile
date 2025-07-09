@@ -1,0 +1,28 @@
+FROM python:3.10-slim-buster
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Копируем файл зависимостей Python
+# Сначала копируем только requirements.txt, чтобы Docker мог кешировать этот слой
+COPY requirements.txt .
+
+# Устанавливаем Python-зависимости
+# Используем --no-cache-dir для уменьшения размера образа
+# Используем --upgrade pip для обновления pip до последней версии
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Копируем остальной код приложения
+COPY . .
+
+# Expose the port that FastAPI will run on
+EXPOSE 8000
+
+# Команда для запуска приложения с помощью Uvicorn
+# --host 0.0.0.0 делает приложение доступным извне контейнера
+# --port 8000 указывает порт, на котором будет слушать Uvicorn
+# main:app указывает на объект 'app' в файле 'main.py'
+CMD ["uvicorn", "main::app", "--host", "0.0.0.0", "--port", "7000"]
