@@ -40,7 +40,18 @@ services:
       retries: 5
       start_period: 5s
     restart: always
-
+  entity_matching_service:
+    build: ./Matching Service/
+    image: custom-entity-matching-service:1.0
+    environment:
+      REDIS_HOST: redis # Это имя сервиса Redis в вашем docker-compose.yml
+      REDIS_PORT: 6379
+    ports:
+      - "7001:7000"
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: always
   redis:
     image: redis:latest
     container_name: redis
