@@ -58,7 +58,7 @@ class RedisHelper:
         cluster_keys = self.client.keys(f"{cluster_prefix}*")
         clusters = {}
         for key in cluster_keys:
-            cluster_id = key.split(":")[-1]
+            cluster_id = key.decode().split(":")[-1] if isinstance(key, bytes) else key.split(":")[-1]
             # decode_responses=True в инициализации клиента Redis для lrange и get
             # Но если вы используете pickle.dumps для embedding, то клиент должен быть decode_responses=False
             # Давайте предположим, что lrange будет возвращать байты, а мы их декодируем
