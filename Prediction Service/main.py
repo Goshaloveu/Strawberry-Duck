@@ -1,11 +1,13 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, conlist, confloat
+from pydantic import BaseModel, Field, confloat
+from typing import List, Annotated # <-- Добавлено Annotated
 import numpy as np
 
 app = FastAPI(title="Boom Trend Detector")
 
 class TrendRequest(BaseModel):
-    daily_counts: conlist(int, min_items=7, max_items=7)
+    # Используем Annotated и Field для задания ограничений на список в Pydantic v2
+    daily_counts: Annotated[List[int], Field(min_length=7, max_length=7)]
     sensitivity: confloat(gt=0) = 1.0
 
 def is_boom_trend(daily_counts, sensitivity=1.0):
@@ -44,4 +46,6 @@ def detect_trend(req: TrendRequest):
         result = is_boom_trend(req.daily_counts, req.sensitivity)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except IndexError as e: # Добавим обработку IndexError на случай недостаточных данных
+        raise HTTPException(status_code=400, detail=f"Недостаточно данных для анализа тренда: {e}")
     return {"is_boom": bool(result)}

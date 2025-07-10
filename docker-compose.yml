@@ -219,7 +219,7 @@ services:
     ports:
       - "8081:11434"
     volumes:
-      - ollama_data:/root/.ollama
+      - ./ollama_data:/root/.ollama
     restart: always
     entrypoint: ["/bin/bash", "-c", "ollama serve & sleep 5 && ollama pull gemma3:27b && wait"]
     healthcheck:
@@ -228,6 +228,14 @@ services:
       timeout: 5s
       retries: 5
       start_period: 60s
+  prediction:
+    build: ./Prediction Service/
+    container_name: prediction_service
+    ports:
+      - "8002:6000"
+    restart: always 
+    volumes:
+      - ./Prediction Service:/app
   # pinecone need to be changed to production version!!!!
   # dense-index:
   #   image: ghcr.io/pinecone-io/pinecone-index:latest
