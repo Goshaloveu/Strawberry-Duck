@@ -52,18 +52,18 @@ services:
       redis:
         condition: service_healthy
     restart: always
-  # ner:
-  #   build: ./NER/
-  #   image: ner:1.0
-  #   environment:
-  #     REDIS_HOST: redis # Это имя сервиса Redis в вашем docker-compose.yml
-  #     REDIS_PORT: 6379
-  #   ports:
-  #     - "7002:6000"
-  #   depends_on:
-  #     redis:
-  #       condition: service_healthy
-  #   restart: always
+  ner:
+    build: ./NER/
+    image: ner:1.0
+    environment:
+      REDIS_HOST: redis # Это имя сервиса Redis в вашем docker-compose.yml
+      REDIS_PORT: 6379
+    ports:
+      - "7002:6000"
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: always
   redis:
     image: redis:latest
     container_name: redis
@@ -214,6 +214,20 @@ services:
     restart: always
     ports:
       - 4040:8080
+  ollama:
+    image: ollama/ollama
+    ports:
+      - "8081:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: always
+    entrypoint: ["/bin/bash", "-c", "ollama serve & sleep 5 && ollama pull gemma3:27b && wait"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/"] # Simple health check for Ollama API
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
   # pinecone need to be changed to production version!!!!
   # dense-index:
   #   image: ghcr.io/pinecone-io/pinecone-index:latest
@@ -244,3 +258,4 @@ volumes:
   postgres-airflow:
   # Rabbitmq:
   Postgres:
+  ollama_data:
